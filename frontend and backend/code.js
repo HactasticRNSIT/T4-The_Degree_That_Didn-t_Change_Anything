@@ -198,3 +198,54 @@ function generatePitch(data, score, career, gaps) {
       : 'The skill set is well-aligned with the target role. ') +
     `GradPath AI provides a personalized roadmap to close these gaps and maximise placement probability.`;
 }
+
+// ─── Summary Generator ────────────────────────────────────────────────────────
+function generateSummary(data, score, career) {
+  if (score >= 80) return `Excellent profile! ${data.name || 'Student'} is highly competitive for ${career} roles.`;
+  if (score >= 60) return `Good profile. A few targeted improvements will make ${data.name || 'Student'} placement-ready for ${career}.`;
+  return `Profile needs significant development. Follow the roadmap to prepare for ${career} opportunities.`;
+}
+
+// ─── API Routes ───────────────────────────────────────────────────────────────
+
+// POST /api/analyze  – main analysis endpoint
+app.post('/api/analyze', (req, res) => {
+  try {
+    const data   = req.body;
+    const result = calculateScore(data);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    console.error('Analysis error:', err);
+    res.status(500).json({ success: false, error: 'Analysis failed. Please check your input.' });
+  }
+});
+
+// GET /api/careers  – return available career goals
+app.get('/api/careers', (req, res) => {
+  const careers = Object.entries(careerLabels).map(([value, label]) => ({
+    value,
+    label,
+    requiredSkills: careerRequirements[value],
+  }));
+  res.json({ success: true, data: careers });
+});
+
+// GET /api/skills/:goal  – return required skills for a goal
+app.get('/api/skills/:goal', (req, res) => {
+  const { goal } = req.params;
+  if (!careerRequirements[goal]) {
+    return res.status(404).json({ success: false, error: 'Career goal not found.' });
+  }
+  res.json({ success: true, data: { goal, skills: careerRequirements[goal] } });
+});
+
+// Catch-all – serve frontend for any unknown route (SPA support)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ─── Start Server ─────────────────────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`\n  ✅  GradPath AI backend running`);
+  console.log(`  🌐  Open: http://localhost:${PORT}\n`);
+});
