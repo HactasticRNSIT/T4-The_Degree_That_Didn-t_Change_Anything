@@ -1,0 +1,182 @@
+r<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GradPath AI Elite</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">G<span>AI</span></div>
+    <a href="#overview">Overview</a>
+    <a href="#input">Input</a>
+    <a href="#analysis">Analysis</a>
+    <a href="#roadmap">Roadmap</a>
+  </aside>
+
+  <main class="main">
+    <section id="overview" class="hero">
+      <div>
+        <p class="badge">Hackathon Ready • Smart Career Analyzer</p>
+        <h1>GradPath AI Elite</h1>
+        <p class="hero-text">
+          Enter student details and get instant career prediction, placement probability,
+          skill gap report, resume analysis, risk score, and personalized roadmap.
+        </p>
+      </div>
+
+      <div class="glass-card hero-stats">
+        <div>
+          <span>Current Score</span>
+          <h2 id="topScore">--%</h2>
+        </div>
+        <div>
+          <span>Predicted Path</span>
+          <h2 id="topPath">Waiting</h2>
+        </div>
+      </div>
+    </section>
+
+    <section id="input" class="layout">
+      <div class="glass-card form-card">
+        <div class="section-head">
+          <h2>Student Input</h2>
+          <p>Fill details and click Analyze Profile.</p>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="showTab('basic')">1. Basic</button>
+          <button class="tab" onclick="showTab('skills')">2. Skills</button>
+          <button class="tab" onclick="showTab('resumeTab')">3. Resume</button>
+        </div>
+
+        <div id="basic" class="tab-content active">
+          <label>Student Name</label>
+          <input id="name" placeholder="Om Prakash"/>
+
+          <div class="grid2">
+            <div>
+              <label>CGPA / 10</label>
+              <input id="cgpa" type="number" min="0" max="10" step="0.1" placeholder="8.5"/>
+            </div>
+            <div>
+              <label>Semester</label>
+              <input id="semester" type="number" min="1" max="8" placeholder="2"/>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label>Projects</label>
+              <input id="projects" type="number" min="0" placeholder="3"/>
+            </div>
+            <div>
+              <label>Internships</label>
+              <input id="internships" type="number" min="0" placeholder="1"/>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label>DSA / 10</label>
+              <input id="dsa" type="number" min="0" max="10" step="0.1" placeholder="7"/>
+            </div>
+            <div>
+              <label>Communication / 10</label>
+              <input id="communication" type="number" min="0" max="10" step="0.1" placeholder="8"/>
+            </div>
+          </div>
+        </div>
+
+        <div id="skills" class="tab-content">
+          <label>Choose Career Goal</label>
+          <select id="goal">
+            <option value="fullstack">Full Stack Developer</option>
+            <option value="backend">Backend Developer</option>
+            <option value="aiml">AI / ML Engineer</option>
+            <option value="datascience">Data Scientist</option>
+            <option value="cybersecurity">Cybersecurity Analyst</option>
+            <option value="cloud">Cloud / DevOps Engineer</option>
+          </select>
+
+          <label>Your Skills</label>
+          <textarea id="skillText" placeholder="Example: C, C++, DSA, HTML, CSS, JavaScript, SQL, Git, React"></textarea>
+
+          <label>Coding Platforms</label>
+          <input id="coding" placeholder="LeetCode, CodeChef, HackerRank, GitHub"/>
+
+          <div class="grid2">
+            <div>
+              <label>Certifications</label>
+              <input id="certifications" type="number" min="0" placeholder="4"/>
+            </div>
+            <div>
+              <label>Hackathons Attended</label>
+              <input id="hackathons" type="number" min="0" placeholder="2"/>
+            </div>
+          </div>
+        </div>
+
+        <div id="resumeTab" class="tab-content">
+          <label>Paste Resume Text</label>
+          <textarea id="resume" class="big-text" placeholder="Paste resume content: education, projects, skills, achievements, internships..."></textarea>
+
+          <label>Project Description</label>
+          <textarea id="projectDesc" placeholder="Describe your best project here..."></textarea>
+        </div>
+
+        <button class="analyze-btn" onclick="analyze()">Analyze Profile</button>
+      </div>
+
+      <div id="analysis" class="glass-card report-card">
+        <div class="report-header">
+          <div>
+            <p class="badge">AI Report</p>
+            <h2 id="studentTitle">No profile analyzed</h2>
+            <p id="summaryText">Enter details to generate analysis.</p>
+          </div>
+          <div class="score-ring">
+            <svg width="150" height="150">
+              <circle cx="75" cy="75" r="60" class="ring-bg"></circle>
+              <circle cx="75" cy="75" r="60" class="ring" id="scoreRing"></circle>
+            </svg>
+            <div class="ring-text"><span id="score">--</span><small>/100</small></div>
+          </div>
+        </div>
+
+        <div class="cards4">
+          <div class="metric"><span>Career Path</span><b id="career">--</b></div>
+          <div class="metric"><span>Placement</span><b id="placement">--</b></div>
+          <div class="metric"><span>Risk</span><b id="risk">--</b></div>
+          <div class="metric"><span>Resume</span><b id="resumeScore">--</b></div>
+        </div>
+
+        <h3>Performance Breakdown</h3>
+        <div id="bars"></div>
+
+        <h3>Skill Gap Analysis</h3>
+        <div id="gaps" class="chips"></div>
+
+        <h3>Strengths</h3>
+        <ul id="strengths"></ul>
+      </div>
+    </section>
+
+    <section id="roadmap" class="glass-card roadmap-card">
+      <div class="section-head">
+        <h2>Personalized Roadmap</h2>
+        <p>Auto-generated based on your weak areas.</p>
+      </div>
+      <div id="timeline" class="timeline"></div>
+
+      <div class="pitch-box">
+        <h3>Hackathon Pitch</h3>
+        <p id="pitch">Analyze a profile first to generate pitch.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
