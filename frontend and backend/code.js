@@ -97,4 +97,104 @@ function calculateScore(data) {
   if (certifications >= 3) strengths.push('Well-certified profile');
   if (matched.length >= Math.ceil(required.length * 0.7))
     strengths.push(`Strong skill match for ${careerLabels[goal]}`);
+
+  // Roadmap phases based on gaps & score
+  const roadmap = buildRoadmap(goal, gaps, finalScore, semester);
+
+  // Performance breakdown (visible as bars on the frontend)
+  const breakdown = {
+    'CGPA':          Math.round(cgpaScore),
+    'DSA':           Math.round(dsaScore),
+    'Communication': Math.round(commScore),
+    'Projects':      Math.round(projectScore),
+    'Internships':   Math.round(internScore),
+    'Skills Match':  Math.round(skillScore),
+    'Certifications':Math.round(certScore),
+    'Hackathons':    Math.round(hackScore),
+  };
+
+  return {
+    score: finalScore,
+    career: careerLabels[goal],
+    placement,
+    risk,
+    resumeScore: `${Math.min(resumeScore, 100)}/100`,
+    gaps,
+    strengths,
+    breakdown,
+    roadmap,
+    pitch: generatePitch(data, finalScore, careerLabels[goal], gaps),
+    summary: generateSummary(data, finalScore, careerLabels[goal]),
+  };
+}
+
+// ─── Roadmap Builder ──────────────────────────────────────────────────────────
+function buildRoadmap(goal, gaps, score, semester) {
+  const phases = [];
+
+  if (score < 50 || gaps.length >= 5) {
+    phases.push({
+      phase: 'Phase 1 – Foundation (Months 1–2)',
+      tasks: [
+        'Strengthen core programming fundamentals (loops, OOP, recursion)',
+        'Complete a DSA course on LeetCode or GeeksForGeeks',
+        gaps.slice(0, 3).map(g => `Learn: ${g}`),
+      ].flat(),
+    });
+  }
+
+  phases.push({
+    phase: `Phase ${phases.length + 1} – Skill Building (Months ${phases.length * 2 + 1}–${phases.length * 2 + 3})`,
+    tasks: [
+      ...(gaps.length ? gaps.slice(0, 4).map(g => `Master: ${g}`) : [`Deepen expertise in ${goal} stack`]),
+      'Build 1 real-world project end-to-end',
+      'Push code daily to GitHub',
+    ],
+  });
+
+  phases.push({
+    phase: `Phase ${phases.length + 1} – Projects & Portfolio (Months ${phases.length * 2 + 1}–${phases.length * 2 + 2})`,
+    tasks: [
+      'Build 2 portfolio projects with full documentation',
+      'Deploy projects on Vercel / Heroku / AWS',
+      'Write LinkedIn posts about your projects',
+      'Contribute to 1 open-source repository',
+    ],
+  });
+
+  if (semester >= 5) {
+    phases.push({
+      phase: `Phase ${phases.length + 1} – Internship & Interview Prep`,
+      tasks: [
+        'Apply for internships on LinkedIn, Internshala, AngelList',
+        'Solve 100+ LeetCode problems (Easy + Medium)',
+        'Mock interviews via Pramp or peers',
+        'Refine resume with measurable achievements',
+      ],
+    });
+  }
+
+  phases.push({
+    phase: `Phase ${phases.length + 1} – Placement Ready`,
+    tasks: [
+      'Earn 1–2 relevant certifications (AWS, Google, Coursera)',
+      'Attend 2 hackathons for networking',
+      'Reach out to professionals via LinkedIn',
+      'Final resume ATS optimisation',
+    ],
+  });
+
+  return phases;
+}
+
+// ─── Pitch Generator ──────────────────────────────────────────────────────────
+function generatePitch(data, score, career, gaps) {
+  const name = data.name || 'This student';
+  return `${name} is a Semester ${data.semester} engineering student targeting a career as a ${career}. ` +
+    `With a CGPA of ${data.cgpa}, ${data.projects} projects, and ${data.internships} internship(s), ` +
+    `the profile scores ${score}/100. ` +
+    (gaps.length
+      ? `Key skill gaps to bridge: ${gaps.slice(0, 3).join(', ')}. `
+      : 'The skill set is well-aligned with the target role. ') +
+    `GradPath AI provides a personalized roadmap to close these gaps and maximise placement probability.`;
 }
